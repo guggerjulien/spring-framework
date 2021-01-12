@@ -40,7 +40,7 @@ import org.springframework.core.codec.Decoder;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
+
 /**
  * A thin wrapper around a sending {@link RSocket} with a fluent API accepting
  * and returning higher level Objects for input and for output, along with
@@ -326,13 +326,6 @@ public interface RSocketRequester {
 		RequestSpec metadata(Consumer<MetadataSpec<?>> configurer);
 
 		/**
-		 *  Hints for codec, Make sure hints value can be encode/decode with {@link MimeTypeUtils#ALL }.
-		 *  @param hints hints for local and remote encoders/decoders
-		 *  @since 5.3.2
-		 **/
-		RequestSpec hints(Map<String, Object> hints);
-
-		/**
 		 * Perform a {@link RSocket#metadataPush(Payload) metadataPush}.
 		 * @since 5.3
 		 */
@@ -350,6 +343,22 @@ public interface RSocketRequester {
 		 * @return spec to declare the expected response
 		 */
 		RetrieveSpec data(Object data);
+
+		/**
+		 * Provide payload data and encode hints for the request. This can be one of:
+		 * <ul>
+		 * <li>Concrete value
+		 * <li>{@link Publisher} of value(s)
+		 * <li>Any other producer of value(s) that can be adapted to a
+		 * {@link Publisher} via {@link ReactiveAdapterRegistry}
+		 * </ul>
+		 * @param data the Object value for the payload data
+		 * @param hints hints for local encoder,and hints for remote could be delivered by metadata
+		 * @return spec to declare the expected response
+		 * @since 5.3.2
+		 */
+		RetrieveSpec data(Object data, Map<String, Object> hints);
+
 
 		/**
 		 * Variant of {@link #data(Object)} that also accepts a hint for the
